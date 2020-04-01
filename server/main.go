@@ -48,7 +48,7 @@ func main() {
 	log.SetFlags(0)
 	http.HandleFunc("/echo", echo)
 	http.HandleFunc("/", home)
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	log.Fatal(http.ListenAndServeTLS(*addr, "public.pem", "key.pem", nil))
 }
 
 var homeTemplate = template.Must(template.New("").Parse(`

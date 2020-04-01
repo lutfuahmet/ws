@@ -1,7 +1,10 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"flag"
+	"io/ioutil"
 	"log"
 	"net/url"
 	"os"
@@ -11,7 +14,23 @@ import (
 	"github.com/fasthttp/websocket"
 )
 
-var addr = flag.String("addr", "3000-d29cb518-9732-4dc5-b609-b5013f0b7464.ws-eu01.gitpod.io", "http service address")
+var addr = flag.String("addr", "localhost:5555", "http service address")
+
+func tlsConfig() *tls.Config {
+	crt, err := ioutil.ReadFile("public.pem")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rootCAs := x509.NewCertPool()
+	rootCAs.AppendCertsFromPEM(crt)
+
+	return &tls.Config{
+		RootCAs:            rootCAs,
+		InsecureSkipVerify: false,
+		ServerName:         "localhost",
+	}
+}
 
 func main() {
 	flag.Parse()
@@ -23,8 +42,11 @@ func main() {
 	u := url.URL{Scheme: "wss", Host: *addr, Path: "/echo"}
 	log.Printf("connecting to %s", u.String())
 
+	websocket.DefaultDialer.TLSClientConfig = tlsConfig()
+
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-	
+
+
 	if err != nil {
 		log.Fatal("dial:", err)
 	}
