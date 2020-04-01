@@ -9,7 +9,7 @@ import (
 	"github.com/fasthttp/websocket"
 )
 
-var addr = flag.String("addr", "localhost:3000", "http service address")
+var addr = flag.String("addr", "localhost:5555", "http service address")
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -40,7 +40,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
-	homeTemplate.Execute(w, "wss://3000-d29cb518-9732-4dc5-b609-b5013f0b7464.ws-eu01.gitpod.io/echo")
+	homeTemplate.Execute(w, "wss://localhost:5555/echo")
 }
 
 func main() {
